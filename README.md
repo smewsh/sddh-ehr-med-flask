@@ -6,6 +6,7 @@
 
 - SQLAlchemy `pip install flask-sqlalchemy`
 - Flask `pip install flask`
+- SQLite3 `pip install db-sqlite3`
 
 
 ## To run the server

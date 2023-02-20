@@ -173,7 +173,8 @@ def verify_password(stored_password, provided_password):
 
 
 if __name__ == "__main__":
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     app.run(
         #ssl_context='adhoc',
         debug=True,

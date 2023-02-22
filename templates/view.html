@@ -1,7 +1,25 @@
 {% extends "base.html" %}
 {% block title %}View All Users{% endblock %}
 {% block content %}
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Privileges</th>
+      </tr>
+    </thead>
+    <tbody>
     {% for item in values %}
-        <p>Name: {{item.name}}, Email {{item.email}}</p>
-    {% endfor %}
+  
+          <tr>
+            <td>{{item[0]}}</td>
+            <td>
+                {% for i in item[1] %}
+                {{i}}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+  </table>
 {% endblock %}

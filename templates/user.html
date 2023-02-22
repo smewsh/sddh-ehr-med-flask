@@ -18,5 +18,20 @@
 <div class="mx-auto" style="width: 50%;">
   Welcome, {{user}}!
 </div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Privileges for {{user}}</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in values %}
+
+        <tr>
+          <td>{{item}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

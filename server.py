@@ -25,11 +25,29 @@ portchoice = config['FLASK']['port']
 ############################################
 # Database Init
 ############################################
+class patients(db.Model):
+    _id = db.Column("id", db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    dob = db.Column(db.String(8))
+    gender = db.Column(db.String(10))
+    address = db.Column(db.String(255))
+    phone = db.Column(db.String(8))
+    email = db.Column(db.String(100))
+    
 
+
+    def __init__(self, name, dob, gender, address, phone, email):
+        self.name = name
+        self.dob = dob
+        self.gender = gender
+        self.address = address
+        self.phone = phone
+        self.email = email
 
 class users(db.Model):
     _id = db.Column("id", db.Integer, primary_key=True)
     name = db.Column(db.String(100))
+    fullname = db.Column(db.String(100))
     pwdsalt = db.Column(db.String(100))
     pwdhash = db.Column(db.String(100))
     email = db.Column(db.String(100))
@@ -50,6 +68,22 @@ class privileges(db.Model):
         self.user = user
         self.priv = priv
 
+class doctor_patients(db.Model):
+    doctor = db.Column(db.String(100), db.ForeignKey("users.name"), primary_key=True)
+    patient = db.Column(db.String(100), primary_key=True)
+
+    def __init__(self, doctor, patient):
+        self.doctor = doctor
+        self.patient = patient
+
+class patient_notes(db.Model):
+    _id = db.Column("id", db.Integer, primary_key=True)
+    patient = db.Column(db.Integer, db.ForeignKey("patients.id"))
+    note = db.Column(db.String(1000))
+
+    def __init__(self, patient, note):
+        self.patient = patient
+        self.note = note
 
 db.create_all()
 port = 8000 if len(sys.argv) == 1 else sys.argv[1]
@@ -59,13 +93,10 @@ port = 8000 if len(sys.argv) == 1 else sys.argv[1]
 # These should be kept in order of control
 # flow if possible.
 ############################################
-
-
 @app.errorhandler(404)
 def page_not_found(e):
     flash("Error 404, page does not exist!")
     return redirect(url_for("user"))
-
 
 @app.route("/")
 def home():
@@ -73,11 +104,9 @@ def home():
         return redirect(url_for("user"))
     return redirect(url_for("login"))
 
-
 @app.route("/index")
 def index():
     return render_template("index.html")
-
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
@@ -114,6 +143,28 @@ def register():
     else:
         return render_template("register.html")
 
+@app.route("/patients", methods=["POST","GET"])
+def patients_page():
+    if "user" not in session:
+        flash("Please login first!")
+        return redirect(url_for("login"))
+    """
+    if not check_privilege(session["user"], "view_patients"):
+        flash("You do not have permission to view this page!")
+        return redirect(url_for("user"))"""
+    
+    if request.method == "POST":
+        name = request.form.get("name")
+        dob = request.form.get("dob")
+        gender = request.form.get("gender")
+        address = request.form.get("address")
+        phone = request.form.get("phone")
+        email = request.form.get("email")
+
+        add_patient(name, dob, gender, address, phone, email)
+
+
+    return render_template("patients.html", patients=get_patients())
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -146,7 +197,6 @@ def login():
 
         return render_template("login.html")
 
-
 @app.route("/logout")
 def logout():
     if not "user" in session:
@@ -171,7 +221,6 @@ def user():
         flash("You are not logged in!")
         return redirect(url_for("login"))
 
-
 @app.route("/view/")
 def view():
     if not check_privilege(session["user"], "view"):
@@ -182,32 +231,52 @@ def view():
     print(values)
     return render_template("view.html", values=values)
 
-
 @app.route("/test")
 def test():
     return render_template("new.html")
 
-
-@app.route("/addpriv/", methods=["POST", "GET"])
-def addpriv():
-    if not check_privilege(session["user"], "addpriv"):
+@app.route("/manageusers/", methods=["POST", "GET"])
+def manageusers():
+    if not check_privilege(session["user"], "manageusers"):
         flash("You do not have permission to view this page!")
         return redirect(url_for("user"))
-
+    
     if request.method == "POST":
         user = request.form.get("user")
+        
+        print(user)
+        return redirect("/manageusers/"+user)
+    else:
+        return render_template("manage_users.html", users=get_users())
+    
+@app.route("/manageusers/<user>", methods=["POST", "GET"])
+def manageusers1(user):
+    if not check_privilege(session["user"], "manageusers"):
+        flash("You do not have permission to view this page!")
+        return redirect(url_for("user"))
+    if request.method == "POST":
         priv = request.form.get("priv")
-
-        if (user == "") or (priv == ""):
+        if (priv == ""):
             flash("Please complete all fields.")
-            return redirect(url_for("addpriv1"))
-
+            return redirect("/manageusers/"+user)
         add_privilege(user, priv)
         flash("Privilege "+priv+" added to user "+user+" successfully!")
-        return redirect(url_for("addpriv"))
+        return redirect("/manageusers/"+user)
     else:
-        return render_template("addpriv.html")
+        return render_template("manage_user.html", user=user, privs=query_privileges(user))
 
+@app.route("/patients/<pid>", methods=["POST", "GET"])
+def patient_page(pid):
+    patient = get_patient(pid)
+    medical_notes = get_notes(pid)
+    if request.method == "POST":
+        note = request.form.get("note")
+        add_note(int(pid), note)
+        return redirect("/patients/"+pid)
+
+    if patient != None:
+        return render_template("patient.html", medical_notes=medical_notes, patient=patient)
+    
 
 @app.route("/ap/<user>/<priv>")
 def addprivy(user, priv):
@@ -215,7 +284,17 @@ def addprivy(user, priv):
     db.session.add(priv)
     db.session.commit()
 
-    return redirect(url_for(priv))
+    return redirect(url_for(user))
+
+@app.route("/removepriv/<user>/<priv>")
+def removepriv(user, priv):
+    if not check_privilege(session["user"], "manageusers"):
+        flash("You do not have permission to view this page!")
+        return redirect(url_for("user"))
+
+    remove_privilege(user, priv)
+    flash("Privilege "+priv+" removed from user "+user+" successfully!")
+    return redirect("/manageusers/"+user)
 
 
 ############################################
@@ -239,19 +318,48 @@ def query_privileges(user):  # Returns a list of privileges for a given user
     formatted_result = [i[0] for i in result]
     return formatted_result
 
-
 def check_privilege(user, privilege):
     user_privileges = query_privileges(user)
     if privilege in user_privileges:
         return True
     return False
 
+def get_patient(id):
+    result = patients.query.filter_by(_id=id).first()
+    return result
+
+def get_users():
+    result = users.query.all()
+    formatted_result = [i.name for i in result]
+    return formatted_result
+
+def get_patients():
+    result = patients.query.all()
+    return result
+
+def get_notes(id):
+    result = patient_notes.query.filter_by(patient=id).all()
+    return result
+
+def add_patient(name, dob, gender, address, phone, email):
+    patient = patients(name, dob, gender, address, phone, email)
+    db.session.add(patient)
+    db.session.commit()
+
+def add_note(patient, note):
+    note = patient_notes(patient, note)
+    db.session.add(note)
+    db.session.commit()
 
 def add_privilege(user, priv):
     priv = privileges(user, priv)
     db.session.add(priv)
     db.session.commit()
 
+def remove_privilege(user, priv):
+    priv = privileges.query.filter_by(user=user, priv=priv).first()
+    db.session.delete(priv)
+    db.session.commit()
 
 ############################################
 # Database Functions

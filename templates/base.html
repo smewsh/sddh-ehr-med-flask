@@ -12,6 +12,11 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="/index">Home</a>
+                    {% if session["user"] %}
+                    {% endif %}
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/patients">Patients</a>
                 </li>
             </ul>
         </div>

@@ -155,6 +155,9 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("login"))
 
+@app.route("/usernew")
+def usernew():
+    return render_template("userpage_new.html")
 
 @app.route("/user", methods=["POST", "GET"])
 def user():

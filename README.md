@@ -10,17 +10,25 @@ This project is a Flask server built using Python 3.9. The following instruction
 ## Setup
 
 1. Create a virtual environment using Python 3.9:
-   `python3.9 -m venv venv`
+   ```
+   python3.9 -m venv venv
+   ```
 2. Activate the virtual environment:
 
     - For Windows:
-    `venv\Scripts\activate`
+    ```
+    venv\Scripts\activate
+    ```
 
     - For macOS and Linux:
-    `source venv/bin/activate`
+    ```
+    source venv/bin/activate
+    ```
 
 3. Install the required packages from the `requirements.txt` file:
-    `pip install -r requirements.txt`
+    ```
+    pip install -r requirements.txt
+    ```
 
 
 ## Running the Server
@@ -29,7 +37,9 @@ This project is a Flask server built using Python 3.9. The following instruction
 
 2. Start the Flask server by running:
 
-`python run.py`
+```
+python run.py
+```
 
 The server will start, and you should see output similar to the following:
 ```
@@ -49,7 +59,9 @@ To stop the Flask server, press `CTRL+C` in the terminal or command prompt where
 
 After you have finished working with the Flask server, deactivate the virtual environment:
 
-`deactivate`
+```
+deactivate
+```
 
 
 This command will return you to your system's global Python environment.

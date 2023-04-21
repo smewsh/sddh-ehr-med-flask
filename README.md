@@ -7,7 +7,7 @@ This project is a Flask server built using Python 3.9. The following instruction
 - Python 3.9
 - pip
 
-* [ ] Setup
+## Setup
 
 1. Create a virtual environment using Python 3.9:
    `python3.9 -m venv venv`

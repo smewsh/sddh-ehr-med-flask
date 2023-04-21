@@ -1,25 +1,55 @@
-## Dependencies:
+# Flask Server
 
-- [Python3](https://www.python.org/downloads/)
+This project is a Flask server built using Python 3.9. The following instructions will guide you on how to set up and run the server using a virtual environment (venv).
 
-### Pip:
+## Prerequisites
 
-- SQLAlchemy `pip install flask-sqlalchemy`
-- Flask `pip install flask`
-- SQLite3 `pip install db-sqlite3` (Just in case)
+- Python 3.9
+- pip
 
-## To run the server
+* [ ] Setup
 
-You must have the above dependencies installed. Once this is done, simply run
-`python3 server.py <PORT>`, where `<PORT>` is your desired port number (default 8000)
+1. Create a virtual environment using Python 3.9:
+   `python3.9 -m venv venv`
+2. Activate the virtual environment:
 
-Alternatively, you can run the startup script firstly with `chmod +x run` and then `./run`.
-The first command only needs to be run once for installation.
-This was made with Python 3.9 and should work with older versions of Python 3, however if you have any issues, please try installing Python 3.9.
+    - For Windows:
+    `venv\Scripts\activate`
+
+    - For macOS and Linux:
+    `source venv/bin/activate`
+
+3. Install the required packages from the `requirements.txt` file:
+    `pip install -r requirements.txt`
 
 
-## How this server works
+## Running the Server
 
-This server uses Flask as a backend, which handles requests, routing, and serving inside `server.py`.
+1. Ensure the virtual environment is active (repeat step 3 in the Setup section if needed).
 
-The SQLite3
+2. Start the Flask server by running:
+
+`python run.py`
+
+The server will start, and you should see output similar to the following:
+```
+----------------------------------------------------------------------
+Web Server Started!
+Please open your browser to: http://127.0.0.1:8001/
+----------------------------------------------------------------------
+```
+
+3. Open your web browser and navigate to the URL displayed in the console (e.g., `http://127.0.0.1:5000/`) to access the Flask application.
+
+## Stopping the Server
+
+To stop the Flask server, press `CTRL+C` in the terminal or command prompt where the server is running.
+
+## Deactivating the Virtual Environment
+
+After you have finished working with the Flask server, deactivate the virtual environment:
+
+`deactivate`
+
+
+This command will return you to your system's global Python environment.

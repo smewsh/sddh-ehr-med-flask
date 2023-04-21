@@ -11,16 +11,27 @@ from flask_sqlalchemy import SQLAlchemy
 import configparser
 
 
+app = Flask(__name__)
+
+
+
 config = configparser.ConfigParser()
 config.read('config.ini')
-app = Flask(__name__)
-app.secret_key = "WziLNrfRES7L+964Q3vDnIhkqWgKxf9PFjBm1iwiiu1ZWH9lScgPdy7oyGZkcx4668sV/lkQd4YFg8JX/Pn9Fg=="
-app.config['SQLALCHEMY_DATABASE_URI'] = config['DATABASE']['filename']
+
+database_filename = config['DATABASE']['filename']
+database_path = os.path.join(os.path.dirname(__file__), database_filename)
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{database_path}"
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-db = SQLAlchemy(app)
-
+app.secret_key = "WziLNrfRES7L+964Q3vDnIhkqWgKxf9PFjBm1iwiiu1ZWH9lScgPdy7oyGZkcx4668sV/lkQd4YFg8JX/Pn9Fg=="
 portchoice = config['FLASK']['port']
+
+
+
+with app.app_context():
+    db = SQLAlchemy(app)
+    db.create_all()
+
 
 ############################################
 # Database Init
@@ -85,7 +96,7 @@ class patient_notes(db.Model):
         self.patient = patient
         self.note = note
 
-db.create_all()
+
 port = 8000 if len(sys.argv) == 1 else sys.argv[1]
 
 ############################################
@@ -384,8 +395,12 @@ def verify_password(stored_password, provided_password):
 
 
 if __name__ == "__main__":
-    app.run(
-        # ssl_context='adhoc',
-        debug=True,
-        host='0.0.0.0',
-        port=port)
+    with app.app_context():
+
+        #db.create_all()
+
+        app.run(
+            # ssl_context='adhoc',
+            debug=True,
+            host='0.0.0.0',
+            port=port)

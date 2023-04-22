@@ -65,3 +65,29 @@ deactivate
 
 
 This command will return you to your system's global Python environment.
+
+# My Health Record
+
+## How to use
+
+The current iteration of this app is intented to fulfll the workflow of a Doctor logging in, and viewing their patients. From here, the doctor can add notes, but also register new patients to the system. The web app also has a privileges system, such that access control can be implemented for certain pages.
+
+To test the prototype, you can use the supplied account, (username:`admin`, password:`admin`).
+
+### Privileges
+
+With this admin account, the priviliges system can be used, by navigating to the `<site>/manageusers/` page. 
+The current privileges system works as a simple whitelist system, and only applies to certain pages (at this stage, only `/manageusers/`).
+
+
+### Doctor Workflow
+
+1. Log in to account (use test account username:`admin` password:`admin`)
+2. Click on Patients tab
+3. Choose a patient to view information by clicking on a name
+4. Click `Add Note`
+5. Click back
+6. Scroll to the bottom, and click `Add Patient`
+7. Enter details
+8. Submit
+9. Log out by clicking the `logout` link in the top right.
